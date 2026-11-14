@@ -193,6 +193,14 @@ Housam and Alma teach Jenna and Danny why Pokemon cards are a 34-billion-dollar 
 |---|---|---|---|
 | 64 | [Pokemon 1 · The Card Collectors](scenes/pokemon/scene64_card_collectors/README.md) | 138 s | In Housam's bedroom, Housam and Alma sort their cards (a shiny dragon, a superhero dolphin) when Jenna and Danny drop by: *"Are those… stickers?"* *"They are Pokemon cards! They have made 34 billion dollars!"* *"Allow me to explain!"* Five reasons: cute and cool creatures, amazing art, a real game, promo cards, and a huge market. *"So cards are like treasure!"* Jenna and Danny want in: *"Let's all enter a Pokemon TCG tournament!"* *"LET'S DO IT!"* *To be continued…* |
 
+### Fall Festival
+
+The Safadi brothers take the kids to the fall festival at Dove Creek Elementary: the grown-ups explain, the kids win the prizes. ([`scenes/fall_festival/`](scenes/fall_festival/series.js))
+
+| # | Scene | Length | Logline |
+|---|---|---|---|
+| 71 | [Fall Festival 1 · Festival Games](scenes/fall_festival/scene71_festival_games/README.md) | 155 s | At the ring toss the professor rings a pumpkin and the doctor rings the professor; at archery the doctor shoots a balloon and a scarecrow, and the professor's arrow goes plop. *"Statistically, nobody can win this game."* *"I prescribe rest. For both of us."* The kids win a glow-in-the-dark sword, a giraffe, a plush dragon and a robot. *"This time… we win!"* *To be continued…* |
+
 ## Category: Sami's studio
 
 Standalone scenes from Sami's studio. They are registered (open them in the studio) but left out of the movie.
