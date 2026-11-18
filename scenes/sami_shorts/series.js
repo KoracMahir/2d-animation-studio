@@ -2,8 +2,9 @@
 series({
   title: 'Sami\'s Shorts',
   category: 'Sami\'s studio',
-  logline: 'Meadow Ridge Elementary, Jenna\'s division lesson, clinic satire and a giraffe dance.',
+  logline: 'A University of Minnesota visit, Meadow Ridge Elementary, Jenna\'s division lesson, clinic satire and a giraffe dance.',
   scenes: [
+    'scene12_umn',
     'meadow-ridge-elementary-school',
     'scene38_jenna_division',
     'scene39_employment_etiquette',

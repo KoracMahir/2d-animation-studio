@@ -29,6 +29,10 @@ const A = jenna(x, y, s, { /* pose + face options */ });
 // A (screen px): head, mouth, top, eyeL, eyeR, chest, belly, handL, handR, footL, footR
 ```
 
+Use `seated: true` with a hip drop (`dy`) and planted `footL` / `footR` targets to spread the skirt over her lap and keep the bent legs visible. Chair staging belongs to the scene.
+
+Use `spin` (radians) to twirl her about her vertical axis (she shows her back while `cos(spin) < 0`) and `hairSwing` (`-1..1`) to swing her low side ponytail; `jennaDance(t, 'twirl')` drives both automatically.
+
 ## Files
 
 | File | What |

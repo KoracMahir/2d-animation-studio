@@ -19,7 +19,7 @@ const A = sarah(x, y, s, {
   handPoseL: 'open', handPoseR: 'open', // open | palm | fist
   eyes: 'open', // open | wide | happy | closed | wink
   brows: 'normal', // normal | up | angry
-  mouth: 'grin', // grin | open | smile | smirk | flat | frown
+  mouth: 'grin', // grin | open | shout (wide scream) | smile | smirk | flat | frown
   lookX: 0, lookY: 0, // -1..1
   blink: 0, // omit for automatic blinking
   rebellion: 0, // 0..1: raised hair, red angry eyes, lightning accents

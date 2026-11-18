@@ -129,6 +129,16 @@ function dnShoe(p, sd, lw) {
 }
 
 function dnHand(p, ang, sd, pose, lw) {
+  if (pose === 'thumb') {
+    // Keep the thumb upright in body space so the gesture reads at any wrist angle.
+    X.save(); X.translate(p[0], p[1]);
+    shape([[-.65, .6], [.6, .6], [.85, .2], [.75, -.5], [.05, -.6],
+      [-.05, -1.55], [-.35, -1.85], [-.65, -1.5], [-.65, -.35], [-.9, .1]],
+      { fill: DN.skin, stroke: DN.ink, lw, smooth: .4 });
+    for (const y of [-.15, .15, .4]) line([[.15, y], [.65, y]], { stroke: DN.skinShade, lw: .1 });
+    X.restore();
+    return;
+  }
   X.save(); X.translate(p[0], p[1]); X.rotate(ang); if (sd < 0) X.scale(1, -1);
   const palm = [[-.2, -.48], [.35, -.54], [.79, -.3], [.9, .16], [.56, .55], [0, .49]];
   shape(palm, { fill: DN.skin, stroke: DN.ink, lw, smooth: .7 });

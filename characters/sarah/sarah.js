@@ -187,7 +187,11 @@ function srHead(o, t, lw, A, rage) {
   line([[turn - .3, -.3], [turn - .42, .35], [turn - .1, .52], [turn + .35, .49]],
     { stroke: SR.skinShade, lw: .18, smooth: true });
   const mouth = o.mouth || (rage ? 'frown' : 'grin');
-  if (mouth === 'grin' || mouth === 'open') {
+  if (mouth === 'shout') {
+    ellipse(turn, 1.75, 1.25, 1.2, { fill: SR.ink, stroke: SR.ink, lw: lw * .75 });
+    shape(rectPts(turn - .83, .75, 1.66, .4), { fill: SR.white, stroke: null });
+    ellipse(turn, 2.4, .7, .3, { fill: SR.lip, stroke: null });
+  } else if (mouth === 'grin' || mouth === 'open') {
     const opening = [[turn - 1.25, 1.1], [turn, 1.35], [turn + 1.25, 1.1], [turn + .7, 2.05], [turn, 2.22], [turn - .7, 2.05]];
     shape(opening, { fill: SR.lip, stroke: SR.ink, lw: lw * .75, smooth: .6 });
     X.save(); tracePath(opening, true, .6); X.clip();

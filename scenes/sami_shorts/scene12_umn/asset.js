@@ -1,4 +1,4 @@
-// scenes/early_episodes/scene12_umn/asset.js: what this folder contains (read by the studio and the renderer).
+// scenes/sami_shorts/scene12_umn/asset.js: what this folder contains (read by the studio and the renderer).
 asset({
   title: 'Umn',
   logline: 'Doctor Sami visits the University of Minnesota',
@@ -17,6 +17,13 @@ asset({
     { at: 30.6, speaker: 'sami', text: 'Screen time can wait. Make time to play and move, too!', cps: 23, hold: .6 },
     { at: 34.1, speaker: 'safadi', text: 'Take breaks, and put screens away before bedtime.', cps: 22, hold: .6 },
     { at: 37.5, speaker: 'sami', text: 'Now, Switch down. Our show is starting!', cps: 22, hold: .8 },
-    { at: 41.7, speaker: 'sarah', text: 'I wish I could come.', cps: 20, hold: 1.3 }
+    { at: 41.7, speaker: 'sarah', text: 'I wish I could come.', cps: 20, hold: 1.3 },
+    { at: 63.0, speaker: 'sami', text: 'I told you not to play on your Nintendo Switch!', cps: 18, hold: 1.8, kind: 'shout' },
+    { at: 78.6, speaker: 'housam', text: 'Psst…', cps: 12, hold: 1.7, kind: 'whisper' },
+    { at: 88.2, speaker: 'sami', text: 'Yes, Danny?', cps: 18, hold: .8 },
+    { at: 90.2, speaker: 'danny', text: 'Can I go to the bathroom?', cps: 18, hold: .9 },
+    { at: 96.2, speaker: 'sami', text: 'Fine.', cps: 12, hold: 1.0 },
+    { at: 104.1, speaker: 'sarah', text: 'Aaaah! I wanted to be at the show!', cps: 15, hold: 2.3, kind: 'shout' },
+    { at: 110.6, speaker: 'roudaynah', text: 'Yah Allah Minek', cps: 16, hold: 1.8 }
   ]
 });

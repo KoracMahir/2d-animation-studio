@@ -28,29 +28,34 @@ function jenna(x, y, s, o = {}) {
 
   X.translate(0, -air);
   if (o.sq) X.scale(1 + o.sq * .55, 1 - o.sq);
+  const cs = Math.cos(o.spin || 0), back = cs < 0;
+  if (o.spin) X.scale(Math.sign(cs || 1) * Math.max(.14, Math.abs(cs)), 1);
 
   withBoil(o.boil ?? .7, () => {
     // Reference proportions: expressive child face and a knee-length tulle skirt.
     const hipY = -10.0 + (o.dy || 0), lean = o.lean || 0, cl = Math.cos(lean), sl = Math.sin(lean);
     const tl = (px, py) => [px * cl - py * sl, hipY + px * sl + py * cl];
     const headT = () => { X.translate(0, hipY); X.rotate(lean); X.translate(0, -6.0); X.rotate(o.tilt || 0); X.translate(0, -6.35); };
+    const swing = o.hairSwing || 0;
 
     // Legs
     [[-1, o.footL || [-1.25, -.65]], [1, o.footR || [1.25, -.65]]].forEach(([sd, f]) => {
       const hp = tl(sd * 1.1, 0), { joint, end } = ik2(hp, f, 4.75, 4.75, [sd * .15, 1]);
       jeLimb([hp, joint, end], 1.6, JE.skin, lw);
-      jeSockAndShoe(end, sd, lw);
+      jeSockAndShoe(end, sd, lw, back);
       A[sd < 0 ? 'footL' : 'footR'] = toPx(end[0], end[1]);
     });
 
     // Torso & Skirt
     X.save(); X.translate(0, hipY); X.rotate(lean);
     // Neck
-    shape([[-.95, -8.3], [.95, -8.3], [1.15, -6.7], [0, -6.3], [-1.15, -6.7]], { fill: JE.skin, stroke: JE.ink, lw, smooth: .4 });
-    shape([[-.95, -8.3], [.95, -8.3], [.9, -7.5], [0, -7.15]], { fill: JE.skinDk, stroke: null, smooth: .4 });
+    const neckTop = back ? -9.4 : -8.3;
+    shape([[-.95, neckTop], [.95, neckTop], [1.15, -6.7], [0, -6.3], [-1.15, -6.7]], { fill: JE.skin, stroke: JE.ink, lw, smooth: .4 });
+    shape([[-.95, neckTop], [.95, neckTop], [.9, back ? -8.0 : -7.5], [0, back ? -7.75 : -7.15]], { fill: JE.skinDk, stroke: null, smooth: .4 });
     // Skirt back/underskirt
-    const skirtW = 3.65;
-    const skirtL = 5.5; 
+    const flare = o.spin ? .4 * Math.abs(Math.sin(o.spin)) : 0;
+    const skirtW = (o.seated ? 4.1 : 3.65) + flare;
+    const skirtL = o.seated ? 2.5 : 5.5;
     shape([[-2.5, -0.5], [2.5, -0.5], [skirtW, skirtL], [-skirtW, skirtL]], { fill: JE.skirtBase, stroke: JE.ink, lw, smooth: .2 });
     // Tulle skirt layers
     shape([[-2.5, -0.5], [2.5, -0.5], [skirtW + 0.3, skirtL + 0.3], [-(skirtW + 0.3), skirtL + 0.3]], { fill: rgba(JE.skirtTulle, .85), stroke: JE.ink, lw, smooth: .2 });
@@ -62,7 +67,7 @@ function jenna(x, y, s, o = {}) {
     }
     X.restore();
     // Shirt
-    X.save(); X.scale(1.4, 1.15); jeShirt(lw / 1.4); X.restore();
+    X.save(); X.scale(1.4, 1.15); jeShirt(lw / 1.4, back); X.restore();
     A.chest = toPx(0, -5.5); A.belly = toPx(0, -2);
     X.restore();
 
@@ -84,15 +89,16 @@ function jenna(x, y, s, o = {}) {
       const ang = Math.atan2(end[1] - joint[1], end[0] - joint[0]);
       if (sd < 0 && hasGiraffe) {
         X.save(); X.translate(end[0] + .3, end[1]); X.rotate(lean);
-        jeGiraffe(lw); A.giraffe = toPx(0, -2.55); X.restore();
+        jeGiraffe(lw, back); A.giraffe = toPx(0, -2.55); X.restore();
         jeHand(end, 0, sd, 'grip', lw);
       } else jeHand(end, ang, sd, pose, lw);
       A[sd < 0 ? 'handL' : 'handR'] = toPx(end[0] + Math.cos(ang)*.5, end[1] + Math.sin(ang)*.5);
     });
 
-    // Head
+    // Head: face and front waves, or the back of her head while twirling.
     X.save(); headT(); X.scale(1.25, 1.25);
-    jeHead(o, t, lw, A);
+    if (back) jeBackHead(lw, A, swing);
+    else jeHead(o, t, lw, A, swing);
     A.top = toPx(0, -4.6);
     X.restore();
 
@@ -107,7 +113,7 @@ function jeLimb(pts, w, col, lw) {
   line(pts, { stroke: col, lw: w, lineJoin: 'round', lineCap: 'round' });
 }
 
-function jeSockAndShoe(a, sd, lw) {
+function jeSockAndShoe(a, sd, lw, back = false) {
   X.save(); X.translate(a[0], a[1]); X.scale(sd * 1.15, 1);
   // Sock
   shape(rectPts(-.7, -1.8, 1.4, 1.8), { fill: JE.sock, stroke: JE.ink, lw });
@@ -118,8 +124,9 @@ function jeSockAndShoe(a, sd, lw) {
   // Sole
   line([[-1.0, .3], [1.2, .3]], { stroke: JE.ink, lw: lw });
   shape([[-1.0, .3], [1.2, .3], [.9, .6], [-.2, .6], [-.9, .4]], { fill: JE.shoeSole, stroke: null, smooth: .4 });
-  // Elastic detail
-  shape([[0, -1.1], [.2, -.8], [.4, -1.1]], { fill: '#E6A8B8', stroke: null });
+  // Elastic detail (front) or heel seam (back)
+  if (back) line([[-.4, -1.0], [-.4, .28]], { stroke: '#E6A8B8', lw: lw * .7 });
+  else shape([[0, -1.1], [.2, -.8], [.4, -1.1]], { fill: '#E6A8B8', stroke: null });
   X.restore();
 }
 
@@ -148,10 +155,19 @@ function jeButterfly(x, y, size, ang = 0) {
   X.restore();
 }
 
-function jeShirt(lw) {
+function jeShirt(lw, back = false) {
   const body = [[-1.8, -.5], [-2.05, -1.5], [-1.9, -3], [-2.2, -6], [-1.2, -6.5],
     [0, -6.2], [1.2, -6.5], [2.2, -6], [1.9, -3], [2.05, -1.5], [1.8, -.5], [0, -.3]];
   shape(body, { fill: JE.shirt, stroke: JE.ink, lw, smooth: .4 });
+  if (back) {
+    shape([[-1.05, -6.42], [-.95, -6.18], [0, -6.04], [.95, -6.18], [1.05, -6.42], [0, -6.26]], { fill: JE.shirt, stroke: JE.ink, lw: lw * .8, smooth: .5 });
+    X.save(); tracePath(body, true, .4); X.clip();
+    withBoil(0, () => {
+      line([[-1.85, -.75], [0, -.62], [1.85, -.75]], { stroke: JE.shirtDk, lw: .09, smooth: true });
+    });
+    X.restore();
+    return;
+  }
   shape([[-1.05, -6.42], [-.95, -5.95], [0, -5.7], [.95, -5.95], [1.05, -6.42], [0, -6.12]], { fill: JE.shirt, stroke: JE.ink, lw: lw * .8, smooth: .5 });
   X.save(); tracePath(body, true, .4); X.clip();
   withBoil(0, () => {
@@ -171,7 +187,78 @@ function jeShirt(lw) {
   X.restore();
 }
 
-function jeHead(o, t, lw, A) {
+function jePonytail(lw, swing = 0) {
+  X.save();
+  if (swing) { X.translate(-2.2, 2.0); X.rotate(-swing * .32); X.translate(2.2, -2.0); }
+  // Smooth low ponytail falls over her right shoulder (viewer left when facing forward).
+  shape([[-2.35, 1.5], [-3.15, 2.3], [-3.55, 3.75], [-3.35, 5.0],
+    [-2.8, 5.65], [-3.0, 6.8], [-2.65, 8.1], [-1.9, 8.8], [-1.95, 7.35],
+    [-2.25, 6.1], [-2.0, 5.25], [-1.85, 3.9], [-2.0, 2.7]],
+    { fill: JE.hair, stroke: JE.ink, lw: lw * .85, smooth: .65 });
+  [[-2.9, -2.55], [-2.5, -2.2]].forEach(([outer, inner]) => {
+    line([[inner, 2.2], [outer, 3.75], [outer + .15, 4.8], [-2.55, 5.55]],
+      { stroke: JE.hairLt, lw: .11, smooth: .8 });
+    line([[-2.6, 5.95], [outer + .2, 7.1], [-2.1, 8.3]],
+      { stroke: JE.hairLt, lw: .09, smooth: .8 });
+  });
+  // Pink ribbon tied around the ponytail.
+  shape([[-2.62, 5.65], [-3.65, 5.25], [-3.8, 5.8], [-3.4, 6.15], [-2.62, 5.85]],
+    { fill: '#EE9CB8', stroke: JE.ink, lw: lw * .7, smooth: .45 });
+  shape([[-2.6, 5.7], [-1.65, 5.2], [-1.4, 5.8], [-1.85, 6.1], [-2.6, 5.85]],
+    { fill: '#EE9CB8', stroke: JE.ink, lw: lw * .7, smooth: .45 });
+  shape([[-2.7, 5.9], [-3.25, 7.3], [-2.8, 7.1], [-2.5, 7.4], [-2.4, 6.0]],
+    { fill: '#EE9CB8', stroke: JE.ink, lw: lw * .7 });
+  shape([[-2.5, 5.9], [-1.6, 6.95], [-1.65, 6.45], [-1.3, 6.4], [-2.35, 5.8]],
+    { fill: '#EE9CB8', stroke: JE.ink, lw: lw * .7 });
+  circle(-2.55, 5.75, .2, { fill: '#E988A8', stroke: JE.ink, lw: lw * .7 });
+  X.restore();
+}
+
+// Back of her head (shown while she twirls away from camera).
+function jeBackHead(lw, A, swing = 0) {
+  withBoil(0, () => {
+    const edge = lw * .65;
+    [-1, 1].forEach(sd => {
+      X.save();
+      if (sd > 0) { X.translate(.12, 0); X.scale(-1, 1); }
+      jePortraitPath([['M', 544, 399], ['C', 525, 375, 508, 390, 510, 422],
+        ['C', 510, 460, 518, 488, 541, 495], ['C', 554, 496, 556, 473, 551, 451], ['Z']],
+        { fill: JE.skin, stroke: JE.ink, lw: edge });
+      X.restore();
+    });
+  });
+  const backHair = [['M', 736, 166], ['C', 695, 143, 643, 148, 603, 172],
+    ['C', 557, 185, 531, 222, 519, 260], ['C', 503, 293, 507, 331, 503, 365],
+    ['C', 496, 393, 515, 428, 534, 462], ['C', 546, 502, 566, 544, 606, 558],
+    ['C', 656, 574, 718, 572, 764, 548], ['C', 798, 530, 818, 490, 826, 446],
+    ['C', 844, 404, 857, 355, 849, 317], ['C', 857, 286, 853, 252, 831, 222],
+    ['C', 814, 188, 777, 161, 736, 166], ['Z']];
+  jePortraitPath(backHair, { fill: JE.hair, stroke: JE.ink, lw: lw * .65 });
+  X.save(); jePortraitPath(backHair); X.clip();
+  withBoil(0, () => {
+    ellipse(.1, -2.55, 1.9, 1.1, { fill: rgba(JE.hairLt, .3), stroke: null });
+    ellipse(0, 2.35, 2.4, .85, { fill: rgba(JE.hairDk, .28), stroke: null });
+    const waves = [
+      [['M', 736, 168], ['C', 725, 225, 692, 310, 622, 415]],
+      [['M', 688, 162], ['C', 636, 210, 594, 290, 565, 412]],
+      [['M', 625, 176], ['C', 575, 228, 542, 305, 536, 425]],
+      [['M', 776, 182], ['C', 782, 265, 745, 372, 650, 480]],
+      [['M', 822, 228], ['C', 832, 325, 790, 428, 690, 515]],
+      [['M', 835, 325], ['C', 822, 412, 765, 485, 635, 530]],
+      [['M', 585, 435], ['C', 572, 472, 565, 502, 562, 532]],
+    ];
+    waves.forEach(path => jePortraitPath(path, { stroke: JE.hairDk, lw: lw * .72 }));
+    waves.slice(0, 5).forEach(path => {
+      X.save(); X.translate(.08, -.08);
+      jePortraitPath(path, { stroke: rgba(JE.hairLt, .55), lw: lw * .38 }); X.restore();
+    });
+  });
+  X.restore();
+  jePonytail(lw, swing);
+  A.head = toPx(0, 0); A.mouth = toPx(0, 2.45); A.eyeL = A.eyeR = A.head;
+}
+
+function jeHead(o, t, lw, A, swing = 0) {
   const turn = clamp(o.turn || 0, -1, 1), tx = turn * .45;
   
   // Hair is tied back, leaving both ears visible.
@@ -271,27 +358,7 @@ function jeHead(o, t, lw, A) {
     X.save(); X.translate(.08, -.08);
     jePortraitPath(path, { stroke: rgba(JE.hairLt, .65), lw: lw * .4 }); X.restore();
   });
-  // Smooth low ponytail falls over her right shoulder (viewer left).
-  shape([[-2.35, 1.5], [-3.15, 2.3], [-3.55, 3.75], [-3.35, 5.0],
-    [-2.8, 5.65], [-3.0, 6.8], [-2.65, 8.1], [-1.9, 8.8], [-1.95, 7.35],
-    [-2.25, 6.1], [-2.0, 5.25], [-1.85, 3.9], [-2.0, 2.7]],
-    { fill: JE.hair, stroke: JE.ink, lw: lw * .85, smooth: .65 });
-  [[-2.9, -2.55], [-2.5, -2.2]].forEach(([outer, inner]) => {
-    line([[inner, 2.2], [outer, 3.75], [outer + .15, 4.8], [-2.55, 5.55]],
-      { stroke: JE.hairLt, lw: .11, smooth: .8 });
-    line([[-2.6, 5.95], [outer + .2, 7.1], [-2.1, 8.3]],
-      { stroke: JE.hairLt, lw: .09, smooth: .8 });
-  });
-  // Pink ribbon tied around the ponytail.
-  shape([[-2.62, 5.65], [-3.65, 5.25], [-3.8, 5.8], [-3.4, 6.15], [-2.62, 5.85]],
-    { fill: '#EE9CB8', stroke: JE.ink, lw: lw * .7, smooth: .45 });
-  shape([[-2.6, 5.7], [-1.65, 5.2], [-1.4, 5.8], [-1.85, 6.1], [-2.6, 5.85]],
-    { fill: '#EE9CB8', stroke: JE.ink, lw: lw * .7, smooth: .45 });
-  shape([[-2.7, 5.9], [-3.25, 7.3], [-2.8, 7.1], [-2.5, 7.4], [-2.4, 6.0]],
-    { fill: '#EE9CB8', stroke: JE.ink, lw: lw * .7 });
-  shape([[-2.5, 5.9], [-1.6, 6.95], [-1.65, 6.45], [-1.3, 6.4], [-2.35, 5.8]],
-    { fill: '#EE9CB8', stroke: JE.ink, lw: lw * .7 });
-  circle(-2.55, 5.75, .2, { fill: '#E988A8', stroke: JE.ink, lw: lw * .7 });
+  jePonytail(lw, swing);
 
 }
 
@@ -383,7 +450,7 @@ function jeMouth(kind, tx, lw) {
 }
 
 // Yellow plush giraffe, drawn upright with the hand wrapped around its long neck.
-function jeGiraffe(lw) {
+function jeGiraffe(lw, back = false) {
   const yellow = '#F9D64E', gold = '#F4AE38', cream = '#F4E6AF';
   const style = { fill: yellow, stroke: JE.ink, lw: lw * .9, smooth: .65 };
   // Four soft legs and orange hooves sit below the pear-shaped body.
@@ -403,6 +470,14 @@ function jeGiraffe(lw) {
     shape([[sd * .55, -2.45], [sd * 1.19, -2.98], [sd * 1.28, -2.55], [sd * .78, -1.95]], style);
   });
   ellipse(0, -2.05, .83, .91, style);
+  if (back) {
+    ellipse(0, -1.75, .24, .28, { fill: gold, stroke: null });
+    ellipse(-.18, 1.35, .24, .32, { fill: gold, stroke: null, rot: .2 });
+    ellipse(.22, 2.35, .22, .28, { fill: gold, stroke: null, rot: -.2 });
+    line([[0, 2.85], [.18, 3.45]], { stroke: JE.ink, lw: lw * .85, smooth: true });
+    ellipse(.22, 3.55, .18, .24, { fill: gold, stroke: JE.ink, lw: lw * .7, rot: -.25 });
+    return;
+  }
   [-1, 1].forEach(sd => ellipse(sd * .29, -2.35, .07, .13, { fill: JE.ink, stroke: null }));
   ellipse(0, -1.72, .76, .63, { fill: cream, stroke: JE.ink, lw: lw * .85 });
   [-1, 1].forEach(sd => ellipse(sd * .2, -1.92, .045, .07, { fill: JE.ink, stroke: null }));
@@ -446,7 +521,7 @@ function jennaDance(t, move, o = {}) {
     case 'disco': { const up = frac(b / 2) < .5; return { ...face, mouth: up ? 'open' : 'grin', eyes: 'open', lookX: up ? .7 : -.4, lookY: up ? -.8 : .3, dy: .3 * hop,
       lean: (up ? -.07 : .07) * k, handR: up ? [4.9, -23.0] : [-1.6, -10.5], handPoseR: 'point', handL: [-2.6, -11.5], handPoseL: 'fist',
       footR: up ? [1.3, -.55] : [.7, -1.1] }; }
-    case 'twirl': { const sp = b * P; return { ...face, spin: sp, dy: .2, handL: [-5.3, -17.5], handR: [5.3, -17.5], handPoseL: 'palm', handPoseR: 'palm',
+    case 'twirl': { const sp = b * P; return { ...face, spin: sp, hairSwing: .9 * k * S(sp), dy: .2, handL: [-5.3, -17.5], handR: [5.3, -17.5], handPoseL: 'palm', handPoseR: 'palm',
       footL: [-.4, -.55], footR: [.5, -1.5] }; }
     case 'star jump': { const j = S(frac(b / 2) * P), sq = kick(frac(b / 2), 0, 14) * .15; return { ...face, mouth: j > .5 ? 'open' : 'grin', jump: 3.2 * k * j, sq: sq - .06 * j,
       handL: mixPt([-3.2, -12.5], [-5.0, -22.0], j), handR: mixPt([3.2, -12.5], [5.0, -22.0], j), handPoseL: 'palm', handPoseR: 'palm',

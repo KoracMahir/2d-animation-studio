@@ -20,7 +20,7 @@ Danny is about **29 local units** tall. `DANNY_UNIT = 4.2` makes him about **122
 const A = danny(x, y, s, {
   t, dy, lean, tilt, turn, rot, jump, sq, flip, breathe,
   handL, handR, footL, footR, // [x, y] targets in local units
-  handPoseL, handPoseR,       // 'open' | 'palm' | 'point' | 'fist'
+  handPoseL, handPoseR,       // 'open' | 'palm' | 'point' | 'fist' | 'thumb' (upright thumbs-up)
   eyes,                     // 'open' | 'wide' | 'happy' | 'closed' | 'wink' | 'squeeze'
   brows,                    // 'normal' | 'up' | 'focused' | 'worried'
   mouth,                    // 'smile' | 'smirk' | 'grin' | 'open' | 'o' | 'flat' | 'frown' | 'wobble'

@@ -15,7 +15,6 @@ series({
     'scene09_hat_trick',
     'scene10_great_debate',
     'scene11_hydration_debate',
-    'scene12_umn',
     'scene13_deal_with_it',
   ],
 });

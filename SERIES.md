@@ -86,7 +86,6 @@ Fester gets fired, and Professor Safadi, Alma and Housam take over the stories: 
 | 09 | [Housam's Hat Trick](scenes/early_episodes/scene09_hat_trick/README.md) | 64 s | At the county soccer field, Housam scores three trick goals past goalkeeper Fester while Safadi and Alma cheer. The last one knocks Fester's hat into the net: *"Three goals… that's a hat trick!"* |
 | 10 | [The Great Debate](scenes/early_episodes/scene10_great_debate/README.md) | 128 s | From DCES to the lecture hall: Safadi says books beat video games, Housam debates him, and the audience votes for Housam. *"Fine… thirty minutes a day."* |
 | 11 | [The Great Hydration Debate](scenes/early_episodes/scene11_hydration_debate/README.md) | 200 s | After their win, Housam and Alma argue eight reasons for sports drinks and win, then Safadi lets them drink his "Safadi Energy Drinks": unsweetened tea |
-| 12 | [Umn](scenes/early_episodes/scene12_umn/README.md) | 54.5 s | Doctor Sami visits the University of Minnesota |
 | 13 | [Deal With It](scenes/early_episodes/scene13_deal_with_it/README.md) | 94 s | At the soccer field, Safadi lectures on soccer until Housam challenges him. Safadi calls in his twin, Doctor Sami (*"Deal with it."*); Housam calls in cousins Jenna and Danny (*"DEAL WITH IT!"*); referee Fester blows the whistle. *To be continued…* |
 
 ### Soccer Showdown
@@ -224,10 +223,11 @@ Doctor Sami teaches: ventilators, dialysis, CRRT, and classical Arabic poetry. (
 
 ### Sami's Shorts
 
-Meadow Ridge Elementary, Jenna's division lesson, clinic satire and a giraffe dance. ([`scenes/sami_shorts/`](scenes/sami_shorts/series.js))
+A University of Minnesota visit, Meadow Ridge Elementary, Jenna's division lesson, clinic satire and a giraffe dance. ([`scenes/sami_shorts/`](scenes/sami_shorts/series.js))
 
 | # | Scene | Length | Logline |
 |---|---|---|---|
+| 12 | [Umn](scenes/sami_shorts/scene12_umn/README.md) | 117 s | Doctor Sami visits the University of Minnesota |
 | | [Meadow Ridge Elementary School](scenes/sami_shorts/meadow-ridge-elementary-school/README.md) | 12 s | An establishing view of the brick school and its blue-trimmed glass entrance in Plymouth, Minnesota |
 | 38 | [Jenna Teaches Danny Division](scenes/sami_shorts/scene38_jenna_division/README.md) | 235 s | At Meadow Ridge Elementary, Jenna teaches Danny division with toy cars and a whiteboard candy example. Danny solves fourteen divided by two, earns cars and candies, and meets Jenna's toy giraffe Fafy |
 | 39 | [The Etiquette of Employment](scenes/sami_shorts/scene39_employment_etiquette/README.md) | 42 s | Workplace satire: Sami asks to transfer clinics. Dr. P's ominous warning becomes a drone delivering one massive etiquette textbook by parachute. |
