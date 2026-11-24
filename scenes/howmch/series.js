@@ -5,5 +5,6 @@ series({
   logline: 'Short promos for Howmch, the live price-conversion camera.',
   scenes: [
     'scene77_howmch_market',
+    'scene78_howmch_tiktok',
   ],
 });

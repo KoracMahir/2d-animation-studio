@@ -3,7 +3,8 @@
 // Every frame is a PURE FUNCTION OF t. Frames render in parallel and out of order, so: no state that carries between
 // frames and no Math.random(). Use hash(i) for stable per-object randomness and jit(a) for hand-drawn wobble.
 
-const W = 1920, H = 1080, TAU = Math.PI * 2;
+// Default frame is 16:9. A scene may set width/height (see setFrame in timeline.js) for other aspects, such as 9:16.
+let W = 1920, H = 1080; const TAU = Math.PI * 2;
 const BOIL = 12;                 // outlines re-jitter 12x per second, like hand-drawn animation
 let X = null;                    // CanvasRenderingContext2D of the frame being painted (set by the studio)
 let T = 0;                       // time of the frame being painted
