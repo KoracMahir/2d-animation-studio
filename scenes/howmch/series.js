@@ -6,5 +6,6 @@ series({
   scenes: [
     'scene77_howmch_market',
     'scene78_howmch_tiktok',
+    'scene79_howmch_shorts',
   ],
 });
