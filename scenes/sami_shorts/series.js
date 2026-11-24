@@ -9,5 +9,6 @@ series({
     'scene38_jenna_division',
     'scene39_employment_etiquette',
     'scene43_giraffe_groove',
+    'scene76_day_on_ice',
   ],
 });

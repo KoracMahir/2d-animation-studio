@@ -45,3 +45,5 @@ Use `spin` (radians) to twirl her about her vertical axis (she shows her back wh
 The asset manifest loads [the shared fighting pose library](../fighting-poses.js) after this rig. In the studio, select a `fight:` pose to preview its looping animation. Existing scene poses remain available.
 
 See [the fighting pose guide](../FIGHTING.md) for the move list, character-specific specials, timing, and the drawing API for either facing direction.
+
+Use `outfit: 'winter'` for a fitted pink quilted jacket with long sleeves and purple pants. `zip: 0..1` positions its zipper pull. This outfit follows the same limb IK, leaning, jumping and vertical spins as her default clothes.

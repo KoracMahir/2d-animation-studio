@@ -21,6 +21,7 @@ const JE = {
 function jenna(x, y, s, o = {}) {
   s *= JENNA_SCALE;
   const t = o.t ?? T, A = {}, lw = clamp(s * .12, 1.2, 5.0) / s;
+  const winter = o.outfit === 'winter';
   X.save(); X.translate(x, y); X.scale(s * (o.flip ? -1 : 1), s);
   
   const air = o.jump || 0;
@@ -41,7 +42,8 @@ function jenna(x, y, s, o = {}) {
     // Legs
     [[-1, o.footL || [-1.25, -.65]], [1, o.footR || [1.25, -.65]]].forEach(([sd, f]) => {
       const hp = tl(sd * 1.1, 0), { joint, end } = ik2(hp, f, 4.75, 4.75, [sd * .15, 1]);
-      jeLimb([hp, joint, end], 1.6, JE.skin, lw);
+      jeLimb([hp, joint, end], winter ? 2.05 : 1.6, winter ? '#665780' : JE.skin, lw);
+      if (winter) line([mixPt(hp, joint, .25), joint, mixPt(joint, end, .85)], { stroke: '#8875A0', lw: .16 });
       jeSockAndShoe(end, sd, lw, back);
       A[sd < 0 ? 'footL' : 'footR'] = toPx(end[0], end[1]);
     });
@@ -52,22 +54,27 @@ function jenna(x, y, s, o = {}) {
     const neckTop = back ? -9.4 : -8.3;
     shape([[-.95, neckTop], [.95, neckTop], [1.15, -6.7], [0, -6.3], [-1.15, -6.7]], { fill: JE.skin, stroke: JE.ink, lw, smooth: .4 });
     shape([[-.95, neckTop], [.95, neckTop], [.9, back ? -8.0 : -7.5], [0, back ? -7.75 : -7.15]], { fill: JE.skinDk, stroke: null, smooth: .4 });
-    // Skirt back/underskirt
-    const flare = o.spin ? .4 * Math.abs(Math.sin(o.spin)) : 0;
-    const skirtW = (o.seated ? 4.1 : 3.65) + flare;
-    const skirtL = o.seated ? 2.5 : 5.5;
-    shape([[-2.5, -0.5], [2.5, -0.5], [skirtW, skirtL], [-skirtW, skirtL]], { fill: JE.skirtBase, stroke: JE.ink, lw, smooth: .2 });
-    // Tulle skirt layers
-    shape([[-2.5, -0.5], [2.5, -0.5], [skirtW + 0.3, skirtL + 0.3], [-(skirtW + 0.3), skirtL + 0.3]], { fill: rgba(JE.skirtTulle, .85), stroke: JE.ink, lw, smooth: .2 });
-    X.save();
-    tracePath([[-2.5, -.5], [2.5, -.5], [skirtW + .3, skirtL + .3], [-skirtW - .3, skirtL + .3]], true, .2); X.clip();
-    for (let i = -4; i <= 4; i++) {
-      line([[i * .53, 0], [i * .85, skirtL + .4]], { stroke: rgba(JE.skirtBase, .6), lw: .22 });
-      line([[i * .53 + .12, 0], [i * .85 + .17, skirtL + .4]], { stroke: rgba('#FFF3EF', .45), lw: .14 });
+    if (!winter) {
+      // Skirt back/underskirt
+      const flare = o.spin ? .4 * Math.abs(Math.sin(o.spin)) : 0;
+      const skirtW = (o.seated ? 4.1 : 3.65) + flare;
+      const skirtL = o.seated ? 2.5 : 5.5;
+      shape([[-2.5, -0.5], [2.5, -0.5], [skirtW, skirtL], [-skirtW, skirtL]], { fill: JE.skirtBase, stroke: JE.ink, lw, smooth: .2 });
+      // Tulle skirt layers
+      shape([[-2.5, -0.5], [2.5, -0.5], [skirtW + 0.3, skirtL + 0.3], [-(skirtW + 0.3), skirtL + 0.3]], { fill: rgba(JE.skirtTulle, .85), stroke: JE.ink, lw, smooth: .2 });
+      X.save();
+      tracePath([[-2.5, -.5], [2.5, -.5], [skirtW + .3, skirtL + .3], [-skirtW - .3, skirtL + .3]], true, .2); X.clip();
+      for (let i = -4; i <= 4; i++) {
+        line([[i * .53, 0], [i * .85, skirtL + .4]], { stroke: rgba(JE.skirtBase, .6), lw: .22 });
+        line([[i * .53 + .12, 0], [i * .85 + .17, skirtL + .4]], { stroke: rgba('#FFF3EF', .45), lw: .14 });
+      }
+      X.restore();
+    } else {
+      shape([[-2.2, -1], [2.2, -1], [2.15, 1], [0, 1.4], [-2.15, 1]], { fill: '#665780', stroke: JE.ink, lw, smooth: .25 });
     }
-    X.restore();
-    // Shirt
-    X.save(); X.scale(1.4, 1.15); jeShirt(lw / 1.4, back); X.restore();
+    // Clothing is drawn inside the torso transform, so it follows every pose.
+    if (winter) jeWinterJacket(lw, back, o.zip ?? 1);
+    else { X.save(); X.scale(1.4, 1.15); jeShirt(lw / 1.4, back); X.restore(); }
     A.chest = toPx(0, -5.5); A.belly = toPx(0, -2);
     X.restore();
 
@@ -76,15 +83,17 @@ function jenna(x, y, s, o = {}) {
     // Arms (in front)
     [[-1, o.handL || tl(hasGiraffe ? -1.6 : -2.65, hasGiraffe ? -3.4 : -1.1), o.handPoseL || (hasGiraffe ? 'grip' : 'hip')], [1, o.handR || tl(2.65, -1.1), o.handPoseR || 'hip']].forEach(([sd, tg, pose]) => {
       const sh = tl(sd * 3.0, -6.3), { joint, end } = ik2(sh, tg, 3.5, 3.5, [sd * 1, 0.5]);
-      jeLimb([sh, joint, end], 1.05, JE.skin, lw);
+      jeLimb([sh, joint, end], winter ? 1.8 : 1.05, winter ? '#C881A4' : JE.skin, lw);
       // Sleeve (over upper arm)
-      const slvEnd = mixPt(sh, joint, .45);
+      const slvEnd = winter ? mixPt(joint, end, .88) : mixPt(sh, joint, .45);
       const slvW = 1.65;
-      line([sh, slvEnd], { stroke: JE.ink, lw: slvW + lw * 2, lineCap: 'round' });
-      line([sh, slvEnd], { stroke: JE.shirt, lw: slvW, lineCap: 'round' });
+      if (!winter) {
+        line([sh, slvEnd], { stroke: JE.ink, lw: slvW + lw * 2, lineCap: 'round' });
+        line([sh, slvEnd], { stroke: JE.shirt, lw: slvW, lineCap: 'round' });
+      }
       const sleeveAngle = Math.atan2(joint[1] - sh[1], joint[0] - sh[0]);
       const cuff = [-Math.sin(sleeveAngle) * slvW * .46, Math.cos(sleeveAngle) * slvW * .46];
-      line([[slvEnd[0] - cuff[0], slvEnd[1] - cuff[1]], [slvEnd[0] + cuff[0], slvEnd[1] + cuff[1]]], { stroke: JE.shirtDk, lw: lw * .8 });
+      line([[slvEnd[0] - cuff[0], slvEnd[1] - cuff[1]], [slvEnd[0] + cuff[0], slvEnd[1] + cuff[1]]], { stroke: winter ? '#935575' : JE.shirtDk, lw: lw * .8 });
       // Hand
       const ang = Math.atan2(end[1] - joint[1], end[0] - joint[0]);
       if (sd < 0 && hasGiraffe) {
@@ -105,6 +114,20 @@ function jenna(x, y, s, o = {}) {
   });
   X.restore();
   return A;
+}
+
+// Optional winter outfit; the default model and all existing poses stay the same.
+function jeWinterJacket(lw, back, zip) {
+  const body = [[-1,-7.4],[-2.6,-6.9],[-3.05,-5.9],[-2.65,-3.8],[-2.45,-1.4],[-2.7,.3],[-1.8,.7],[1.8,.7],[2.7,.3],[2.45,-1.4],[2.65,-3.8],[3.05,-5.9],[2.6,-6.9],[1,-7.4]];
+  shape(body, {fill:'#C881A4',stroke:JE.ink,lw,smooth:.32});
+  shape([[-1,-7.4],[-1.5,-6.7],[0,-5.9],[1.5,-6.7],[1,-7.4],[0,-7]], {fill:'#E9B3CC',stroke:JE.ink,lw:lw*.75,smooth:.2});
+  for (const y of [-4.7,-2.7,-.7]) line([[-2.4,y],[0,y+.15],[2.4,y]], {stroke:'#AF6A8E',lw:.12,smooth:true});
+  line([[-2.5,.25],[0,.5],[2.5,.25]],{stroke:'#935575',lw:.3,smooth:true});
+  if (back) return;
+  line([[0,-6.2],[0,.35]],{stroke:'#FFF1D8',lw:.16});
+  const zy=lerp(.1,-6,clamp(zip));
+  ellipse(0,zy,.2,.32,{fill:'#F7D58C',stroke:JE.ink,lw:lw*.65});
+  for (const sd of [-1,1]) line([[sd*.9,-2.9],[sd*1.9,-1.6]],{stroke:'#935575',lw:.18});
 }
 
 function jeLimb(pts, w, col, lw) {
