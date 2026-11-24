@@ -19,12 +19,17 @@
   const q = new URLSearchParams(location.search);
   const first = ASSETS.scene[q.get('scene')] ? q.get('scene') : REGISTRY.movie[0];
   if (q.has('render')) { await requireScene(first); useScene(first); }
-  window.setScene = async id => { if (!ASSETS.scene[id]) throw new Error('unknown scene ' + id); await requireScene(id); useScene(id); return sceneInfo(); };
+  window.setScene = async id => { if (!ASSETS.scene[id]) throw new Error('unknown scene ' + id); await requireScene(id); useScene(id); syncCanvas(); return sceneInfo(); };
   window.loadAsset = loadAsset; window.requireScene = requireScene; window.loadAll = loadAll;
-  window.sceneInfo = () => ({ id: SCENE.id, title: SCENE.title, duration: SCENE.duration, fps: SCENE.fps, audio: SCENE.audio || null, synthesizedAudio: !!(SCENE.music || SCENE.dialogue?.length) });
-  window.renderAt = async (t, type = 'image/png', qual = .92) => { drawFrame(t); return canvas.toDataURL(type, qual); };
+  const syncCanvas = () => {
+    const w = SCENE?.width || 1920, h = SCENE?.height || 1080;
+    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+  };
+  window.sceneInfo = () => ({ id: SCENE.id, title: SCENE.title, duration: SCENE.duration, fps: SCENE.fps, width: SCENE.width || 1920, height: SCENE.height || 1080, audio: SCENE.audio || null, synthesizedAudio: !!(SCENE.music || SCENE.dialogue?.length) });
+  window.renderAt = async (t, type = 'image/png', qual = .92) => { syncCanvas(); drawFrame(t); return canvas.toDataURL(type, qual); };
   window.renderSheet = async (times, cols = 3, w = 640) => {
-    const h = Math.round(w * 9 / 16), rows = Math.ceil(times.length / cols), sc = document.createElement('canvas');
+    syncCanvas();
+    const h = Math.round(w * canvas.height / canvas.width), rows = Math.ceil(times.length / cols), sc = document.createElement('canvas');
     sc.width = cols * w; sc.height = rows * h; const c = sc.getContext('2d'), ms = [];
     for (let i = 0; i < times.length; i++) {
       const t0 = performance.now(); drawFrame(times[i]); ms.push(Math.round(performance.now() - t0));

@@ -85,6 +85,12 @@ function scene(def) {
 function useScene(id) { SCENE = SCENES[id] || null; if (SCENE) { BPM = SCENE.bpm ?? 100; BEAT_OFF = SCENE.beatOffset ?? 0; } return SCENE; }
 
 let GRAIN = null;
+// Switch the paint size. The renderer's canvas must already match. Grain is rebuilt because it is a full-frame texture.
+function setFrame(w, h) {
+  w = Math.round(w || 1920); h = Math.round(h || 1080);
+  if (w === W && h === H) return;
+  W = w; H = h; GRAIN = null;
+}
 function makeGrain() {
   const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
   const c = cv.getContext('2d'), id = c.createImageData(W, H), d = id.data, r = mulberry(5);
@@ -118,6 +124,7 @@ function shotAt(sc, t) {
 }
 
 function drawFrame(t, sc = SCENE) {
+  setFrame(sc?.width || 1920, sc?.height || 1080);
   paintFrame(t, () => {
     if (!sc) { X.fillStyle = '#fff'; X.font = '40px sans-serif'; X.fillText('no scene loaded', 80, 100); return; }
     const tt = clamp(t, 0, sc.duration - 1e-6), sh = shotAt(sc, tt);
