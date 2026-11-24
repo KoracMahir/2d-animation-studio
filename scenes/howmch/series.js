@@ -7,5 +7,6 @@ series({
     'scene77_howmch_market',
     'scene78_howmch_tiktok',
     'scene79_howmch_shorts',
+    'scene80_howmch_v3',
   ],
 });
