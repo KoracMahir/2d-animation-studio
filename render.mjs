@@ -52,10 +52,14 @@ async function openPage(sceneId, tag = '') {
   await page.goto(pathToFileURL(resolve('studio.html')).href + `?render&scene=${sceneId}`, { waitUntil: 'networkidle0', timeout: 60000 });
   await page.waitForFunction('window.ready === true', { timeout: 60000 });
   const info = await page.evaluate(id => window.setScene(id), sceneId);
+  await page.evaluate(async () => { await Promise.all([...document.images].map(i => i.decode().catch(() => {}))); });
   return { page, info };
 }
 const frameOf = async (page, t, type, q) => {
-  const url = await page.evaluate((t, type, q) => window.renderAt(t, type, q), t, type, q);
+  const url = await page.evaluate(async (t, type, q) => {
+    await Promise.all([...document.images].filter(i => !i.complete).map(i => i.decode().catch(() => {})));
+    return window.renderAt(t, type, q);
+  }, t, type, q);
   return Buffer.from(url.slice(url.indexOf(',') + 1), 'base64');
 };
 

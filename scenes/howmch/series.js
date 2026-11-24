@@ -8,5 +8,6 @@ series({
     'scene78_howmch_tiktok',
     'scene79_howmch_shorts',
     'scene80_howmch_v3',
+    'scene81_howmch_v4',
   ],
 });
