@@ -10,5 +10,6 @@ series({
     'scene80_howmch_v3',
     'scene81_howmch_v4',
     'scene82_howmch_v5',
+    'scene83_howmch_open',
   ],
 });
